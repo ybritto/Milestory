@@ -65,3 +65,21 @@ After bootstrap is complete, also follow the more specific instructions in:
 - `template-frontend/AGENTS.md`
 
 If a module is renamed, apply the same guidance from the corresponding renamed module location.
+
+## Project Initialization Status
+
+The real application name for this repository is `Milestory`.
+
+Planning has been initialized in `.planning/` with the current product direction:
+
+- Milestory is a backend-driven goal and resolution tracking app.
+- Authentication is part of v1 scope but intentionally sequenced after the core goal-tracking MVP.
+- UX quality and technical architecture are primary project drivers.
+
+Current workflow entry point after initialization:
+
+- Run `$gsd-discuss-phase 1` to refine Phase 1 before implementation.
+
+Known repository concern:
+
+- Template leftovers still exist in package names and some metadata. Keep this visible during implementation and prefer cleaning them before broad feature delivery.
