@@ -1,56 +1,53 @@
-# Stack Research: Milestory
-
-## Baseline
-
-Milestory already has a strong contract-first baseline:
-
-- Java 25
-- Spring Boot 4
-- Angular 21
-- OpenAPI 3.2
-
-This stack fits the stated priorities well: backend-owned logic, strong API contracts, and a modern SPA for the dashboard-heavy experience.
-
-## Recommended Direction
-
-- Keep the contract-first workflow with OpenAPI as the shared source of truth between backend and frontend.
-- Put all goal progression rules, checkpoint generation, status evaluation, and accomplishment-tier logic in backend services.
-- Keep Angular focused on orchestration, visualization, accessibility, and stateful UI flows.
-- Standardize UI components early rather than mixing patterns later.
-
-## UI Library Decision
-
-Two realistic options fit the current stack:
-
-### Angular Material
-
-Best fit if the priority is long-term consistency, accessibility defaults, and a more controlled design system.
-
-Why it fits:
-- Strong accessibility baseline
-- Good foundation for custom dashboard styling
-- Lower visual lock-in if Milestory wants a distinct product identity
-
-Tradeoff:
-- Some dashboard widgets may need more custom composition work
-
-### PrimeNG
-
-Best fit if the priority is shipping dense, ready-made dashboard widgets quickly.
-
-Why it fits:
-- Broad component catalog
-- Faster path to tables, charts, overlays, and data-heavy admin-style screens
-
-Tradeoff:
-- Easier to drift into a generic enterprise look unless intentionally restyled
+# Stack Research
 
 ## Recommendation
 
-Favor Angular Material for Milestory unless the upcoming UI phase proves PrimeNG materially reduces delivery risk for the dashboard experience. The project goal emphasizes UX excellence, and Material gives a cleaner base for a distinct, polished product language.
+Keep the repository's current contract-first stack and avoid a major platform pivot during v1. The existing Java/Spring Boot/OpenAPI/Angular/PostgreSQL setup already matches the stated priorities of backend-owned business logic, strong architecture, and a polished web UX.
 
-## What Not To Do
+## Recommended Core Stack
 
-- Do not split business calculations across frontend and backend.
-- Do not choose a component library phase by phase.
-- Do not let generated API models become the domain model boundary in backend business logic.
+- Backend: Java 25 + Spring Boot 4
+- API contract: OpenAPI 3.1.2 with the existing dedicated API module
+- Persistence: PostgreSQL + Liquibase
+- Frontend: Angular 21 + SCSS + generated OpenAPI client
+- Build orchestration: Maven parent workspace plus npm for frontend tooling
+
+## UI Component Library Direction
+
+Recommended default for v1: Angular Material.
+
+Why it fits:
+
+- Better match for a first polished product pass where accessibility and consistency matter more than sheer component volume
+- Lower visual debt than adopting a heavier data-grid-oriented library too early
+- Easier to customize into a stronger product identity while keeping interaction primitives stable
+
+PrimeNG remains a viable fallback if later phases need richer ready-made data-heavy widgets or complex scheduling tables, but it should not be the default until a concrete gap appears.
+
+## Keep Versus Add
+
+Keep:
+
+- Contract-first API generation already present in the repo
+- Backend-owned calculation logic
+- Liquibase-based schema evolution
+- Angular standalone and signal-friendly app direction
+
+Add early:
+
+- Proper backend package structure for domain, application, and infrastructure boundaries
+- Initial Liquibase changelog tree
+- Design-system foundation in the frontend instead of relying on starter markup
+- Focused test layers around domain rules and progress calculations
+
+## Avoid For v1
+
+- Pushing progress logic or motivational scoring into Angular state code
+- Adding a second backend framework or alternate persistence layer
+- Introducing multiple UI libraries at once
+- Building auth and multi-user concerns into the first core milestone
+
+## Confidence
+
+- High confidence in keeping the existing backend and contract-first stack
+- Medium confidence in Angular Material as the default component choice until dashboard detail needs are clearer

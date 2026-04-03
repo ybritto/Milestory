@@ -1,66 +1,82 @@
-# Pitfalls Research: Milestory
+# Pitfalls Research
 
-## Pitfall 1: Treating goals as generic notes instead of measurable systems
+## Pitfall 1: Designing Goal Types Too Rigidly
 
 Warning signs:
-- Goals lack units, cadence, or target logic
-- Dashboard status becomes subjective
+
+- Every new goal category requires new tables and custom flows
+- Shared dashboard logic becomes impossible across goal types
 
 Prevention:
-- Require measurable goal definitions from the domain model onward
-- Encode goal type semantics explicitly in backend rules
+
+- Start with a shared goal model that supports target, unit, cadence, and progress entries
+- Introduce category-specific extensions only when concrete use cases force them
 
 Suggested phase:
+
+- Phase 1 and Phase 2
+
+## Pitfall 2: Building Dashboard UI Before Trustworthy Calculations
+
+Warning signs:
+
+- Dashboard looks polished but statuses are inconsistent or hard to explain
+- Users cannot understand why a goal is marked behind or ahead
+
+Prevention:
+
+- Implement checkpoint and status calculations first
+- Make dashboard components consume backend-owned summary models
+
+Suggested phase:
+
+- Phase 2 and Phase 3
+
+## Pitfall 3: Letting Auth Distort The First Milestone
+
+Warning signs:
+
+- Identity, email, and JWT work consume the schedule before goal tracking exists
+- Early schema and API design center around accounts instead of goals
+
+Prevention:
+
+- Keep v1 in personal mode
+- Design the domain so auth can wrap it later instead of defining it now
+
+Suggested phase:
+
+- Roadmap-level scope control
+
+## Pitfall 4: Ignoring The Scaffold Gaps
+
+Warning signs:
+
+- Liquibase remains configured without migrations
+- Placeholder Angular UI survives into feature work
+- Architecture claims exist only in docs, not in package structure
+
+Prevention:
+
+- Make foundation cleanup an explicit early phase
+- Treat template leftovers and missing migrations as delivery blockers
+
+Suggested phase:
+
 - Phase 1
 
-## Pitfall 2: Letting the frontend own progress calculations
+## Pitfall 5: Choosing A UI Kit Before Defining Product Visual Direction
 
 Warning signs:
-- Angular computes on-track status locally
-- Backend returns only raw numbers with no interpretation
+
+- The app feels like a stock admin console
+- Component defaults drive information architecture instead of product intent
 
 Prevention:
-- Expose derived status, progress percentages, and accomplishment tiers from backend APIs
-- Keep frontend display-oriented
+
+- Choose a single library deliberately
+- Establish core typography, spacing, dashboard composition, and state visuals before scaling feature screens
 
 Suggested phase:
-- Phase 1 and Phase 3
 
-## Pitfall 3: Auto-generated checkpoints that feel arbitrary
-
-Warning signs:
-- Generated milestones are mathematically even but behaviorally unrealistic
-- Users immediately need to rewrite every suggestion
-
-Prevention:
-- Support category-aware defaults and editable checkpoints
-- Make checkpoint rules explicit and testable
-
-Suggested phase:
-- Phase 2
-
-## Pitfall 4: Dashboard visuals without actionable meaning
-
-Warning signs:
-- Attractive charts but no clear next step
-- User cannot tell what to do when behind
-
-Prevention:
-- Every dashboard card should express status, current gap, and next checkpoint
-- Design API read models around user decisions, not generic chart data
-
-Suggested phase:
 - Phase 3
-
-## Pitfall 5: Adding auth late without preparing for ownership boundaries
-
-Warning signs:
-- Early domain data assumes a single hard-coded user
-- Retrofitting access rules touches every endpoint
-
-Prevention:
-- Design entities and APIs with future ownership fields and security seams
-- Keep a clear adapter layer where JWT-based user context can attach later
-
-Suggested phase:
-- Phase 1 and Phase 5

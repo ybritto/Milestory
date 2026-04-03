@@ -1,27 +1,24 @@
-# Research Summary: Milestory
+# Research Summary
 
 ## Stack
 
-Milestory should keep its existing Spring Boot + Angular + OpenAPI contract-first architecture and keep all domain intelligence in the backend. Angular Material is the leading UI-library recommendation because it better supports a deliberate, high-quality product identity.
+Keep the existing contract-first Java/Spring Boot/Angular/PostgreSQL stack. The repo already aligns with backend-owned domain logic, and Angular Material is the best default UI library choice for v1 unless later dashboard needs clearly justify PrimeNG.
 
 ## Table Stakes
 
-- Measurable goal creation
-- Automatic but editable checkpoint planning
-- Progress logging
-- Clear on-track / below-plan / above-plan status
-- Dashboard views that summarize yearly momentum
+Milestory needs strong goal planning, editable checkpoint generation, progress tracking, and a dashboard that clearly explains plan versus actual status. Those are the core product expectations for a personal yearly goal application.
 
 ## Differentiators
 
-- Accomplishment tiers such as 80%, 100%, and 120%
-- Strong dashboard storytelling around momentum and next milestones
-- Goal setup that feels guided instead of clerical
+The strongest differentiators are backend-generated yearly checkpoints, accomplishment bands such as 80%/100%/120%, and a motivating presentation layer that makes progress feel actionable rather than judgmental.
 
 ## Watch Out For
 
-- Vague goal models that cannot support reliable status calculations
-- Frontend-owned business rules
-- Checkpoint generation that feels arbitrary
-- Pretty dashboards that do not lead to action
-- Deferring auth without keeping clean ownership seams
+- Do not overfit the domain model to specific goal categories too early
+- Do not build dashboard polish before status calculations are trustworthy
+- Do not let auth scope delay the personal goal-tracking core
+- Do not ignore current scaffold gaps like missing Liquibase migrations and template leftovers
+
+## Planning Guidance
+
+The roadmap should begin with foundation cleanup and architectural skeleton work, then move into goal planning, progress calculations, and dashboard presentation. Authentication should remain a later phase after the personal single-user product loop is proven.

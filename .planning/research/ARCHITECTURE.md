@@ -1,48 +1,46 @@
-# Architecture Research: Milestory
+# Architecture Research
 
-## Core Components
+## Recommended System Shape
 
-### Goal Planning Domain
+Milestory should be implemented as a backend-centered domain application with a thin but polished Angular client. The frontend should orchestrate views and interactions, while the backend owns goal modeling, checkpoint generation, progress aggregation, status evaluation, and motivational band calculations.
 
-Responsible for goal definitions, category semantics, measurement units, targets, and yearly planning rules.
+## Suggested Bounded Areas
 
-### Checkpoint Engine
+### Goal Definition
 
-Responsible for generating default checkpoints, validating edits, and exposing expected progress curves over time.
+Owns goal identity, category, target values, units, time horizon, and lifecycle state.
 
-### Progress Tracking Domain
+### Checkpoint Planning
 
-Responsible for progress entries, normalization, cumulative totals, and derived status calculations.
+Owns suggested milestones, editable checkpoint schedules, and expected progress curves across the year.
 
-### Dashboard Read Models
+### Progress Tracking
 
-Responsible for aggregating domain data into frontend-friendly views such as status cards, trend summaries, and accomplishment tiers.
+Owns recorded progress entries, aggregation logic, and comparisons between actual and planned progress.
 
-### Identity and Access
+### Dashboard And Insights
 
-Responsible for the email-first entry flow, JWT authentication, and ownership boundaries around private goal data.
+Owns summary projections, status groupings, and accomplishment band views for presentation to the frontend.
 
 ## Data Flow
 
-1. User defines a goal in the frontend.
-2. Backend stores the goal and generates checkpoint suggestions.
-3. User reviews or edits checkpoints.
-4. User logs progress updates over time.
-5. Backend recalculates expected-vs-actual progress and accomplishment tiers.
-6. Dashboard endpoints return aggregated views for the UI.
-7. Authentication later restricts access to the user’s own plans and dashboard data.
+1. User defines or edits a goal in the frontend
+2. Backend validates the request and persists the goal
+3. Backend generates or updates suggested checkpoints
+4. User records progress events
+5. Backend recalculates plan-versus-actual status and motivational bands
+6. Dashboard endpoints return pre-computed or application-assembled summaries for rendering
 
-## Boundary Guidance
+## Build Order Implications
 
-- Backend owns rules, calculations, validations, and derived states.
-- Frontend owns input flow, display logic, and interaction design.
-- OpenAPI contracts define the public seam between frontend and backend.
+1. Establish project skeleton cleanup and architectural boundaries
+2. Build goal and checkpoint domain model
+3. Build progress recording and status calculation
+4. Build dashboard queries and presentation endpoints
+5. Add auth only after the personal product loop works well
 
-## Suggested Build Order
+## Architectural Warnings
 
-1. Establish domain model and contract boundaries.
-2. Build goal creation and checkpoint suggestion flow.
-3. Add progress logging and status evaluation.
-4. Build dashboard read models and frontend experience.
-5. Add motivation tiers and celebratory feedback.
-6. Add email-first authentication and authorization last.
+- Do not model each goal type as a completely separate subsystem unless the shared model clearly fails
+- Do not let the frontend invent status logic that differs from backend truth
+- Do not postpone migration setup and domain boundaries until after UI work begins

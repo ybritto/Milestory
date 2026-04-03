@@ -1,43 +1,54 @@
-# Feature Research: Milestory
+# Features Research
 
 ## Table Stakes
 
-### Goal Definition
+### Goal Planning
 
-- Users can create a goal with a title, category, metric, target value, and target period.
-- Users can view all active goals in one place.
-- Users can edit goal settings after creation.
+- Create a goal with a title, category, target, unit, and yearly horizon
+- Edit or archive an existing goal
+- Support multiple goal shapes without forcing separate products for each domain
 
-### Planning
+### Checkpoint Planning
 
-- The app suggests intermediate checkpoints rather than leaving the yearly target abstract.
-- Users can adjust generated checkpoints when real life requires a different cadence.
+- Generate a suggested yearly breakdown from the main target
+- Let the user edit generated checkpoints before committing
+- Display upcoming checkpoints clearly
 
-### Tracking
+### Progress Tracking
 
-- Users can log progress updates against a goal.
-- The app translates raw progress into simple status language such as behind, on track, and ahead.
+- Record progress updates over time
+- Compare actual progress to expected progress at the current date
+- Show whether a goal is behind, on track, or ahead
 
 ### Dashboard
 
-- Users can see overall progress across goals.
-- Each goal clearly communicates current status and next milestone.
+- Summarize current goal health in one place
+- Surface which goals need attention first
+- Show trend and plan-versus-actual views without making the user open every goal
 
 ## Differentiators
 
-- Accomplishment tiers such as 80%, 100%, and 120% that make overachievement visible.
-- Cross-goal momentum summaries that reinforce whether the year is trending well overall.
-- Goal templates by category that help users set better initial plans.
+- Motivation system based on accomplishment bands such as 80%, 100%, and 120%
+- Backend-generated checkpoint suggestions instead of manual-only planning
+- One shared progress model that can work across very different goal categories
+- Language and visuals that make the product feel encouraging rather than punitive
 
 ## Anti-Features
 
-- Social feeds, public challenges, and public accountability loops
-- Gamification that overwhelms the core progress signal
-- Generic note-taking without measurable outcomes
-- Complex budgeting or fitness-tracker integrations before the core workflow is validated
+- Social feeds, communities, public profiles, or goal sharing
+- Complex team or family planning workflows
+- Heavy gamification before the core product loop is validated
+- Authentication in the first release
+- Native mobile app scope during v1
+
+## Complexity Notes
+
+- Goal modeling across heterogeneous categories is the core design challenge
+- Dashboard quality depends on having trustworthy status calculations underneath
+- Motivation bands are only useful if the checkpoint and progress model feels fair and intuitive
 
 ## Dependencies
 
-- Dashboard quality depends on strong goal and checkpoint models.
-- Motivation features depend on reliable status and progress calculations.
-- Authentication can be added late only if earlier phases keep domain logic user-agnostic and session boundaries clean.
+- Goal planning must exist before dashboard usefulness emerges
+- Progress status depends on checkpoint generation or equivalent plan expectations
+- Motivational layers depend on reliable progress calculations
