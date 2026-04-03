@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class DomainIsolationTest {
 
     private static final Path DOMAIN_STATUS_PATH = Path.of(
-            "src/main/java/com/ybritto/milestory/domain/status"
+            "src/main/java/com/ybritto/milestory/status/domain"
     );
 
     @Test
