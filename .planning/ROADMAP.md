@@ -65,7 +65,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — Lock the progress-entry contract and framework-free backend status foundation
-- [ ] 03-02-PLAN.md — Persist progress entries and enrich backend goal detail/list responses
+- [x] 03-02-PLAN.md — Persist progress entries and enrich backend goal detail/list responses
 - [ ] 03-03-PLAN.md — Ship the goal-detail progress-entry UX, history, and pace rendering
 
 **Success criteria:**
@@ -95,4 +95,4 @@ Phase 1 addresses current scaffold risks before feature growth. Phase 2 defines 
 All v1 requirements map to exactly one phase.
 
 ---
-*Last updated: 2026-04-04 after completing Phase 02*
+*Last updated: 2026-04-04 after completing Phase 03 Plan 02*

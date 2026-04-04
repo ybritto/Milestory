@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 03
 status: in_progress
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-04-04T17:38:46.213Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-04-04T17:52:47.221Z"
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 9
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # STATE.md
@@ -29,8 +29,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 - Research synthesized in `.planning/research/`
 - Requirements and roadmap created for the auth-free personal first release
 - Phase 01 is complete with the auth-free backend status endpoint and the Milestory-branded frontend home screen
-- Phase 03 is now underway with the progress-entry contract and framework-free pace-status domain seam in place
-- Next planned work is Phase 03 plan 02: persistence and controller/read-model wiring for progress entries
+- Phase 03 now includes persistent progress-entry writes plus enriched backend goal detail/list read models
+- Next planned work is Phase 03 plan 03: the goal-detail progress-entry UX, history, and pace rendering
 
 ## Phase Summary
 
@@ -44,9 +44,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 ## Current Execution
 
 - **Current phase:** 03
-- **Completed plans:** `01-01`, `01-02`, `01-03`, `02-01`, `02-02`, `02-03`, `03-01`
-- **Next plan:** `03-02`
-- **Plan progress:** `1 / 3` (`33%`)
+- **Completed plans:** `01-01`, `01-02`, `01-03`, `02-01`, `02-02`, `02-03`, `03-01`, `03-02`
+- **Next plan:** `03-03`
+- **Plan progress:** `2 / 3` (`67%`)
 
 ## Decisions
 
@@ -69,6 +69,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 - [Phase 03]: Derive pace status from checkpoint interpolation on the backend with a named 5 percent of target tolerance constant.
 - [Phase 03]: Keep user-facing pace summary and detail strings in the backend service so later UI work renders product-owned copy instead of recomputing tone.
 - [Phase 03]: Keep progress updates append-only and cumulative, with correction detection based on the latest entry by entryDate then recordedAt.
+- [Phase 03-progress-engine-and-status]: Assemble goal detail and list responses from application read models that pair persisted entries with backend-derived progress snapshots.
+- [Phase 03-progress-engine-and-status]: Keep checkpoint context labels and detail copy backend-owned so the frontend renders annotations without rebuilding progress logic.
 
 ## Performance Metrics
 
@@ -80,11 +82,12 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 | Phase 02 P02 | 17 min | 2 tasks | 42 files |
 | Phase 02 P03 | 14 min | 2 tasks | 21 files |
 | Phase 03-progress-engine-and-status P01 | 19 min | 2 tasks | 14 files |
+| Phase 03-progress-engine-and-status P02 | 11 min | 2 tasks | 17 files |
 
 ## Session
 
-- **Stopped at:** Completed 03-01-PLAN.md
-- **Last summary:** `.planning/phases/03-progress-engine-and-status/03-01-SUMMARY.md`
+- **Stopped at:** Completed 03-02-PLAN.md
+- **Last summary:** `.planning/phases/03-progress-engine-and-status/03-02-SUMMARY.md`
 
 ## Notes
 
@@ -93,4 +96,4 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 - Template leftovers remain in some docs and metadata and should stay visible during implementation decisions
 
 ---
-*Last updated: 2026-04-04 after completing Phase 03 Plan 01*
+*Last updated: 2026-04-04 after completing Phase 03 Plan 02*

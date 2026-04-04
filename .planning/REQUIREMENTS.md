@@ -29,7 +29,7 @@
 - [x] **PROG-01**: User can record a dated progress update for a goal
 - [x] **PROG-02**: User can view cumulative progress against the target value
 - [x] **PROG-03**: User can see whether a goal is under plan, on track, or above plan at the current point in time
-- [ ] **PROG-04**: User can understand how current status relates to planned checkpoints
+- [x] **PROG-04**: User can understand how current status relates to planned checkpoints
 
 ### Dashboard
 
@@ -80,7 +80,7 @@
 | PROG-01 | Phase 3 | Complete |
 | PROG-02 | Phase 3 | Complete |
 | PROG-03 | Phase 3 | Complete |
-| PROG-04 | Phase 3 | Pending |
+| PROG-04 | Phase 3 | Complete |
 | DASH-01 | Phase 4 | Pending |
 | DASH-02 | Phase 4 | Pending |
 | DASH-03 | Phase 4 | Pending |
@@ -93,4 +93,4 @@
 
 ---
 *Requirements defined: 2026-04-03*
-*Last updated: 2026-04-03 after initial definition*
+*Last updated: 2026-04-04 after completing Phase 03 Plan 02*
