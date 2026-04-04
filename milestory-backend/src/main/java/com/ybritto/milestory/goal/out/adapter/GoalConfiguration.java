@@ -13,6 +13,7 @@ import com.ybritto.milestory.goal.application.usecase.PreviewGoalPlanUseCase;
 import com.ybritto.milestory.goal.application.usecase.RecordProgressEntryUseCase;
 import com.ybritto.milestory.goal.application.usecase.RestoreGoalUseCase;
 import com.ybritto.milestory.goal.application.usecase.UpdateGoalUseCase;
+import com.ybritto.milestory.goal.domain.GoalProgressStatusService;
 import java.time.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,13 +63,38 @@ public class GoalConfiguration {
     }
 
     @Bean
-    GetGoalDetailUseCase getGoalDetailUseCase(GoalPersistencePort goalPersistencePort) {
-        return new GetGoalDetailUseCase(goalPersistencePort);
+    GoalProgressStatusService goalProgressStatusService() {
+        return new GoalProgressStatusService();
     }
 
     @Bean
-    ListGoalsUseCase listGoalsUseCase(GoalPersistencePort goalPersistencePort) {
-        return new ListGoalsUseCase(goalPersistencePort);
+    GetGoalDetailUseCase getGoalDetailUseCase(
+            GoalPersistencePort goalPersistencePort,
+            GoalProgressEntryPersistencePort goalProgressEntryPersistencePort,
+            GoalProgressStatusService goalProgressStatusService,
+            Clock goalClock
+    ) {
+        return new GetGoalDetailUseCase(
+                goalPersistencePort,
+                goalProgressEntryPersistencePort,
+                goalProgressStatusService,
+                goalClock
+        );
+    }
+
+    @Bean
+    ListGoalsUseCase listGoalsUseCase(
+            GoalPersistencePort goalPersistencePort,
+            GoalProgressEntryPersistencePort goalProgressEntryPersistencePort,
+            GoalProgressStatusService goalProgressStatusService,
+            Clock goalClock
+    ) {
+        return new ListGoalsUseCase(
+                goalPersistencePort,
+                goalProgressEntryPersistencePort,
+                goalProgressStatusService,
+                goalClock
+        );
     }
 
     @Bean

@@ -20,6 +20,7 @@ import com.ybritto.milestory.goal.application.usecase.RecordProgressEntryUseCase
 import com.ybritto.milestory.goal.application.usecase.RestoreGoalUseCase;
 import com.ybritto.milestory.goal.application.usecase.UpdateGoalUseCase;
 import com.ybritto.milestory.goal.domain.GoalCheckpoint;
+import com.ybritto.milestory.goal.domain.GoalProgressStatusService;
 import com.ybritto.milestory.goal.support.GoalTestSupport;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -49,8 +50,19 @@ class GoalControllerIntegrationTest {
         ListGoalCategoriesUseCase listGoalCategoriesUseCase = new ListGoalCategoriesUseCase(categoryPort);
         CreateCustomGoalCategoryUseCase createCustomGoalCategoryUseCase = new CreateCustomGoalCategoryUseCase(categoryPort);
         CreateGoalUseCase createGoalUseCase = new CreateGoalUseCase(goalPort, categoryPort, GoalTestSupport.FIXED_CLOCK);
-        GetGoalDetailUseCase getGoalDetailUseCase = new GetGoalDetailUseCase(goalPort);
-        ListGoalsUseCase listGoalsUseCase = new ListGoalsUseCase(goalPort);
+        GoalProgressStatusService goalProgressStatusService = new GoalProgressStatusService();
+        GetGoalDetailUseCase getGoalDetailUseCase = new GetGoalDetailUseCase(
+                goalPort,
+                progressEntryPort,
+                goalProgressStatusService,
+                GoalTestSupport.FIXED_CLOCK
+        );
+        ListGoalsUseCase listGoalsUseCase = new ListGoalsUseCase(
+                goalPort,
+                progressEntryPort,
+                goalProgressStatusService,
+                GoalTestSupport.FIXED_CLOCK
+        );
         UpdateGoalUseCase updateGoalUseCase = new UpdateGoalUseCase(goalPort, categoryPort, GoalTestSupport.FIXED_CLOCK);
         RecordProgressEntryUseCase recordProgressEntryUseCase = new RecordProgressEntryUseCase(
                 goalPort,
@@ -232,6 +244,65 @@ class GoalControllerIntegrationTest {
                                 }
                                 """))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void enrichesGoalDetailAndListWithProgressSnapshotsAndCheckpointAnnotations() throws Exception {
+        previewGoalPlan();
+        mockMvc.perform(post("/api/v1/goals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createGoalRequestJson("Read 24 books", BigDecimal.valueOf(24))))
+                .andExpect(status().isCreated());
+
+        UUID goalId = goalPort.goals().keySet().iterator().next();
+
+        mockMvc.perform(post("/api/v1/goals/{goalId}/progress-entries", goalId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "entryDate": "2026-03-10",
+                                  "progressValue": 8,
+                                  "note": "Finished a strong month"
+                                }
+                                """))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/v1/goals/{goalId}/progress-entries", goalId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "entryDate": "2026-04-04",
+                                  "progressValue": 6,
+                                  "note": "Corrected an overcount"
+                                }
+                                """))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/v1/goals/{goalId}", goalId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.currentProgressValue", is(6.0)))
+                .andExpect(jsonPath("$.expectedProgressValueToday", is(6.2667)))
+                .andExpect(jsonPath("$.paceStatus", is("ON_PACE")))
+                .andExpect(jsonPath("$.paceSummary", is("You're right where this goal expected you to be today.")))
+                .andExpect(jsonPath("$.paceDetail",
+                        is("Your progress is tracking the checkpoint path you set for this point in the year.")))
+                .andExpect(jsonPath("$.progressEntries", hasSize(2)))
+                .andExpect(jsonPath("$.progressEntries[0].entryType", is("CORRECTION")))
+                .andExpect(jsonPath("$.progressEntries[0].entryDate", is("2026-04-04")))
+                .andExpect(jsonPath("$.checkpoints[0].progressContextLabel", is("Latest checkpoint passed")))
+                .andExpect(jsonPath("$.checkpoints[0].progressContextDetail", notNullValue()))
+                .andExpect(jsonPath("$.checkpoints[3].progressContextLabel", is("Expected by now")));
+
+        mockMvc.perform(get("/api/v1/goals"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].currentProgressValue", is(6.0)))
+                .andExpect(jsonPath("$[0].expectedProgressValueToday", is(6.2667)))
+                .andExpect(jsonPath("$[0].paceStatus", is("ON_PACE")))
+                .andExpect(jsonPath("$[0].paceSummary", is("You're right where this goal expected you to be today.")))
+                .andExpect(jsonPath("$[0].paceDetail",
+                        is("Your progress is tracking the checkpoint path you set for this point in the year.")))
+                .andExpect(jsonPath("$[0].progressEntries[0].entryType", is("CORRECTION")))
+                .andExpect(jsonPath("$[0].checkpoints[0].progressContextLabel", is("Latest checkpoint passed")));
     }
 
     private void previewGoalPlan() throws Exception {
