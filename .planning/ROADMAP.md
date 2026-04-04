@@ -64,7 +64,7 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Lock the progress-entry contract and framework-free backend status foundation
+- [x] 03-01-PLAN.md — Lock the progress-entry contract and framework-free backend status foundation
 - [ ] 03-02-PLAN.md — Persist progress entries and enrich backend goal detail/list responses
 - [ ] 03-03-PLAN.md — Ship the goal-detail progress-entry UX, history, and pace rendering
 

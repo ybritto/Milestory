@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 02
-status: complete
-stopped_at: Completed `02-03-PLAN.md`
-last_updated: "2026-04-04T09:01:51.110Z"
+current_phase: 03
+status: in_progress
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-04-04T17:38:46.213Z"
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 9
+  completed_plans: 7
 ---
 
 # STATE.md
@@ -20,7 +20,7 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-03)
 
 **Core value:** Milestory must make yearly goals feel concrete, measurable, and motivating by showing clear progress against a plan the user can actually follow.
-**Current focus:** Phase 02 — goal-planning-and-checkpoints
+**Current focus:** Phase 03 — progress-engine-and-status
 
 ## Current Status
 
@@ -29,7 +29,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 - Research synthesized in `.planning/research/`
 - Requirements and roadmap created for the auth-free personal first release
 - Phase 01 is complete with the auth-free backend status endpoint and the Milestory-branded frontend home screen
-- Next planned work is Phase 02 goal planning and checkpoint flows on top of the routed frontend shell
+- Phase 03 is now underway with the progress-entry contract and framework-free pace-status domain seam in place
+- Next planned work is Phase 03 plan 02: persistence and controller/read-model wiring for progress entries
 
 ## Phase Summary
 
@@ -37,15 +38,15 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 |-------|------|--------|
 | 1 | Foundation And Personal Mode | Complete |
 | 2 | Goal Planning And Checkpoints | Complete |
-| 3 | Progress Engine And Status | Pending |
+| 3 | Progress Engine And Status | In Progress |
 | 4 | Dashboard And Motivational UX | Pending |
 
 ## Current Execution
 
-- **Current phase:** 02
-- **Completed plans:** `01-01`, `01-02`, `01-03`, `02-01`, `02-02`, `02-03`
-- **Next plan:** `Phase 03 discussion`
-- **Plan progress:** `3 / 3` (`100%`)
+- **Current phase:** 03
+- **Completed plans:** `01-01`, `01-02`, `01-03`, `02-01`, `02-02`, `02-03`, `03-01`
+- **Next plan:** `03-02`
+- **Plan progress:** `1 / 3` (`33%`)
 
 ## Decisions
 
@@ -64,6 +65,10 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 - Reuse the same guided create/edit flow in the frontend so goal updates stay aligned with initial planning.
 - Keep the frontend planning store backend-driven so preview, detail, archive, and restore state all come straight from API responses.
 - Route `/goals/archive` ahead of the generic detail route so archive navigation cannot be captured by `:goalId`.
+- [Phase 03]: Keep progress updates append-only and cumulative, with correction detection based on the latest entry by entryDate then recordedAt.
+- [Phase 03]: Derive pace status from checkpoint interpolation on the backend with a named 5 percent of target tolerance constant.
+- [Phase 03]: Keep user-facing pace summary and detail strings in the backend service so later UI work renders product-owned copy instead of recomputing tone.
+- [Phase 03]: Keep progress updates append-only and cumulative, with correction detection based on the latest entry by entryDate then recordedAt.
 
 ## Performance Metrics
 
@@ -74,11 +79,12 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 | Phase 02 P01 | 39 min | 2 tasks | 16 files |
 | Phase 02 P02 | 17 min | 2 tasks | 42 files |
 | Phase 02 P03 | 14 min | 2 tasks | 21 files |
+| Phase 03-progress-engine-and-status P01 | 19 min | 2 tasks | 14 files |
 
 ## Session
 
-- **Stopped at:** Completed `02-03-PLAN.md`
-- **Last summary:** `.planning/phases/02-goal-planning-and-checkpoints/02-03-SUMMARY.md`
+- **Stopped at:** Completed 03-01-PLAN.md
+- **Last summary:** `.planning/phases/03-progress-engine-and-status/03-01-SUMMARY.md`
 
 ## Notes
 
@@ -87,4 +93,4 @@ See: `.planning/PROJECT.md` (updated 2026-04-03)
 - Template leftovers remain in some docs and metadata and should stay visible during implementation decisions
 
 ---
-*Last updated: 2026-04-04 after Phase 02 completion*
+*Last updated: 2026-04-04 after completing Phase 03 Plan 01*
