@@ -61,6 +61,13 @@ Plans:
 
 **Requirements:** PROG-01, PROG-02, PROG-03, PROG-04
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Lock the progress-entry contract and framework-free backend status foundation
+- [ ] 03-02-PLAN.md — Persist progress entries and enrich backend goal detail/list responses
+- [ ] 03-03-PLAN.md — Ship the goal-detail progress-entry UX, history, and pace rendering
+
 **Success criteria:**
 1. User can record dated progress entries for an existing goal
 2. Backend can aggregate recorded progress into a current cumulative state
