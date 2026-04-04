@@ -1,64 +1,140 @@
 <main class="goal-page goal-page--detail">
-  @if (goal(); as goal) {
-    <section class="goal-shell">
-      <header class="goal-shell__hero">
-        <p class="goal-shell__eyebrow">Goal detail</p>
-        <h1>{{ goal.title }}</h1>
-        <p class="goal-shell__summary">
-          Saved plan for {{ goal.planningYear }}. The checkpoint path and detail snapshot come
-          straight from the backend.
+  <section class="goal-shell">
+    @if (isLoading()) {
+      <section class="goal-card goal-status-hero" aria-label="Loading goal progress status">
+        <div class="goal-status-hero__skeleton-label"></div>
+        <div class="goal-status-hero__skeleton-headline"></div>
+        <div class="goal-status-hero__skeleton-summary"></div>
+      </section>
+
+      <section class="goal-card goal-comparison-strip" aria-hidden="true">
+        <div class="goal-comparison-strip__skeleton"></div>
+      </section>
+    } @else if (isError()) {
+      <section class="goal-card goal-status-hero goal-status-hero--error">
+        <p class="goal-status-hero__eyebrow">Progress status</p>
+        <h1>Progress status unavailable</h1>
+        <p class="goal-status-hero__summary">
+          Milestory could not load the current progress status for this goal. Retry the page, and if
+          the issue persists confirm the backend is running and the goal still exists.
         </p>
-      </header>
-
-      <section class="goal-card goal-detail">
-        <div class="goal-detail__header">
+        <button type="button" class="goal-button goal-button--ghost" (click)="retryLoadGoal()">
+          Retry page
+        </button>
+      </section>
+    } @else if (goal(); as goal) {
+      <section class="goal-card goal-status-hero" [class]="'goal-card goal-status-hero goal-status-hero--' + paceTone()">
+        <div class="goal-status-hero__header">
           <div>
-            <p class="goal-summary__eyebrow">Planned path</p>
-            <h2>How the year is shaped</h2>
+            <p class="goal-status-hero__eyebrow">{{ goal.paceStatus.replace('_', ' ') }}</p>
+            <h1>{{ goal.title }}</h1>
           </div>
-
-          <div class="goal-detail__flags">
-            <span class="goal-pill">{{ categoryLabel() }}</span>
-            <span class="goal-pill">{{ goal.targetValue }} {{ goal.unit }}</span>
-            <span class="goal-pill" [class.goal-pill--accent]="goal.customizedFromSuggestion">
-              {{ goal.customizedFromSuggestion ? 'Customized from suggestion' : 'Backend suggestion' }}
-            </span>
-          </div>
+          <span class="goal-pill goal-pill--status">{{ categoryLabel() }}</span>
         </div>
 
-        <ul class="goal-detail__facts">
-          <li>{{ goal.motivation }}</li>
-          <li>{{ goal.notes }}</li>
-          <li>{{ goal.plannedPathSummary }}</li>
-          <li>{{ suggestionBasisLabel() }}</li>
-        </ul>
+        <p class="goal-status-hero__summary">{{ goal.paceSummary }}</p>
+        <p class="goal-status-hero__detail">{{ goal.paceDetail }}</p>
 
-        @if (goal.status === 'ARCHIVED') {
-          <p class="goal-detail__archive-note">
-            Archived goals are read-only until they are restored.
-          </p>
-        }
+        <div class="goal-status-hero__meta">
+          <span class="goal-pill">{{ goal.targetValue }} {{ goal.unit }}</span>
+          <span class="goal-pill">{{ goal.progressPercentOfTarget }}% of target</span>
+          @if (goal.customizedFromSuggestion) {
+            <span class="goal-pill goal-pill--accent">Customized from suggestion</span>
+          }
+        </div>
 
-        <div class="goal-detail__actions">
-          @if (goal.status === 'ACTIVE') {
+        <div class="goal-status-hero__actions">
+          @if (!isArchived()) {
+            <button
+              #progressTrigger
+              type="button"
+              class="goal-button goal-button--primary goal-status-hero__cta"
+              (click)="openProgressEntry()"
+            >
+              Add progress update
+            </button>
             <button type="button" class="goal-button goal-button--ghost" (click)="editGoal()">
               Edit plan
             </button>
             <button type="button" class="goal-button goal-button--danger" (click)="archiveGoal()">
               Archive goal
             </button>
-          }
-          @else {
+          } @else {
+            <p class="goal-status-hero__archive-note">
+              This goal is archived. Its plan and progress history stay visible, but new updates are
+              disabled.
+            </p>
             <a class="goal-button goal-button--ghost" routerLink="/goals/archive">View archive</a>
           }
         </div>
+
+        @if (successMessage()) {
+          <p class="goal-status-hero__success" role="status">{{ successMessage() }}</p>
+        }
       </section>
 
-      <section class="goal-card goal-detail">
+      <section class="goal-card goal-comparison-strip">
+        <article class="goal-comparison-strip__metric">
+          <p class="goal-comparison-strip__label">Actual so far</p>
+          <p class="goal-comparison-strip__value">{{ goal.currentProgressValue }} {{ goal.unit }}</p>
+        </article>
+        <article class="goal-comparison-strip__metric">
+          <p class="goal-comparison-strip__label">Expected by today</p>
+          <p class="goal-comparison-strip__value">{{ goal.expectedProgressValueToday }} {{ goal.unit }}</p>
+        </article>
+        <p class="goal-comparison-strip__detail">{{ goal.paceDetail }}</p>
+      </section>
+
+      <section class="goal-card goal-progress-history">
+        <div class="goal-progress-history__header">
+          <div>
+            <p class="goal-summary__eyebrow">Progress history</p>
+            <h2>Visible progress updates</h2>
+          </div>
+        </div>
+
+        @if (hasHistory()) {
+          <div class="goal-progress-history__list">
+            @for (entry of progressEntries(); track entry.progressEntryId) {
+              <article class="progress-entry-card">
+                <div class="progress-entry-card__header">
+                  <div>
+                    <p class="progress-entry-card__date">{{ entry.entryDate }}</p>
+                    <p class="progress-entry-card__value">{{ entry.progressValue }} {{ goal.unit }}</p>
+                  </div>
+                  @if (entry.entryType === 'CORRECTION') {
+                    <span class="goal-pill goal-pill--correction">Correction</span>
+                  }
+                </div>
+                @if (entry.note) {
+                  <p class="progress-entry-card__note">{{ entry.note }}</p>
+                }
+                @if (entry.entryType === 'CORRECTION') {
+                  <p class="progress-entry-card__helper">
+                    Logged as a correction to reflect a lower total than an earlier update.
+                  </p>
+                }
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="goal-progress-history__empty">
+            <h2>No progress logged yet</h2>
+            <p>Add your first update to see how this goal is tracking against the plan for today.</p>
+            @if (!isArchived()) {
+              <button type="button" class="goal-button goal-button--primary" (click)="openProgressEntry()">
+                Add progress update
+              </button>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="goal-card goal-checkpoint-section">
         <div class="goal-detail__header">
           <div>
-            <p class="goal-summary__eyebrow">Checkpoints</p>
-            <h2>{{ checkpointCount() }} checkpoint cards</h2>
+            <p class="goal-summary__eyebrow">Checkpoint context</p>
+            <h2>{{ checkpointCards().length }} checkpoint cards</h2>
           </div>
         </div>
 
@@ -66,25 +142,63 @@
           @for (checkpoint of checkpointCards(); track checkpoint.checkpointId) {
             <article class="checkpoint-card">
               <div class="checkpoint-card__header">
-                <p class="checkpoint-card__label">Checkpoint {{ checkpoint.sequenceNumber }}</p>
+                <div>
+                  <p class="checkpoint-card__label">Checkpoint {{ checkpoint.sequenceNumber }}</p>
+                  <h3>{{ checkpoint.targetValue }} {{ goal.unit }} by {{ checkpoint.checkpointDate }}</h3>
+                </div>
                 <span class="goal-pill">{{ checkpoint.origin }}</span>
               </div>
-              <div class="checkpoint-card__grid">
-                <p>{{ checkpoint.checkpointDate }}</p>
-                <p>{{ checkpoint.targetValue }}</p>
-                <p>{{ checkpoint.note || 'No note added yet.' }}</p>
-              </div>
+              <p class="checkpoint-card__context-label">{{ checkpoint.progressContextLabel }}</p>
+              <p class="checkpoint-card__context-detail">{{ checkpoint.progressContextDetail }}</p>
+              <p class="checkpoint-card__note">{{ checkpoint.note || 'No note added yet.' }}</p>
             </article>
           }
         </div>
       </section>
-    </section>
-  } @else {
-    <section class="goal-shell">
-      <header class="goal-shell__hero">
-        <p class="goal-shell__eyebrow">Goal detail</p>
-        <h1>Loading goal</h1>
-      </header>
-    </section>
+    }
+  </section>
+
+  @if (isOverlayOpen()) {
+    <div class="goal-progress-overlay" aria-hidden="false">
+      <div class="goal-progress-overlay__backdrop" (click)="closeProgressEntry()"></div>
+      <section
+        #overlayDialog
+        class="goal-progress-overlay__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="goal-progress-overlay-title"
+        (keydown)="handleDialogKeydown($event)"
+      >
+        <div class="goal-progress-overlay__header">
+          <h2 id="goal-progress-overlay-title">Add progress update</h2>
+        </div>
+
+        <form class="goal-progress-overlay__form" [formGroup]="progressForm" (ngSubmit)="submitProgress()">
+          <label class="goal-form-field" for="progress-entry-date">
+            <span>Date</span>
+            <input #progressDateInput id="progress-entry-date" type="date" formControlName="entryDate" />
+          </label>
+
+          <label class="goal-form-field" for="progress-entry-value">
+            <span>Progress so far</span>
+            <input id="progress-entry-value" type="number" min="0" step="0.01" formControlName="progressValue" />
+          </label>
+
+          <label class="goal-form-field" for="progress-entry-note">
+            <span>Note</span>
+            <textarea id="progress-entry-note" rows="4" formControlName="note"></textarea>
+          </label>
+
+          <div class="goal-progress-overlay__actions">
+            <button type="submit" class="goal-button goal-button--primary">
+              Save progress update
+            </button>
+            <button type="button" class="goal-button goal-button--ghost" (click)="closeProgressEntry()">
+              Close without saving
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
   }
 </main>

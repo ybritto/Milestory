@@ -1,42 +1,53 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ListGoalCategories200ResponseInner } from '../../../../api/model/listGoalCategories200ResponseInner';
 import { ListGoals200ResponseInner } from '../../../../api/model/listGoals200ResponseInner';
-import { GoalPlanningStore } from '../shared/goal-planning.store';
+import { ListGoals200ResponseInnerProgressEntriesInner } from '../../../../api/model/listGoals200ResponseInnerProgressEntriesInner';
+import { GoalPlanningStore, ProgressOverlayState } from '../shared/goal-planning.store';
 import { GoalDetailPage } from './goal-detail.page';
 
 describe('GoalDetailPage', () => {
   let fixture: ComponentFixture<GoalDetailPage>;
+  let goalSignal: WritableSignal<ListGoals200ResponseInner | null>;
+  let categoriesSignal: WritableSignal<ListGoalCategories200ResponseInner[]>;
+  let viewStateSignal: WritableSignal<{ kind: string; message?: string }>;
+  let progressOverlaySignal: WritableSignal<ProgressOverlayState>;
+  let successMessageSignal: WritableSignal<string | null>;
   let loadGoal: ReturnType<typeof vi.fn>;
   let loadGoalCategories: ReturnType<typeof vi.fn>;
-  let navigate: ReturnType<typeof vi.fn>;
+  let archiveGoal: ReturnType<typeof vi.fn>;
+  let recordProgress: ReturnType<typeof vi.fn>;
+  let openProgressOverlay: ReturnType<typeof vi.fn>;
+  let closeProgressOverlay: ReturnType<typeof vi.fn>;
 
-  beforeEach(async () => {
-    loadGoal = vi.fn();
-    loadGoalCategories = vi.fn();
-    navigate = vi.fn();
-
+  async function createComponent(): Promise<void> {
     await TestBed.configureTestingModule({
       imports: [GoalDetailPage],
       providers: [
         {
           provide: GoalPlanningStore,
           useValue: {
-            goal: signal(createGoal()).asReadonly(),
-            goalCategories: signal(createCategories()).asReadonly(),
-            viewState: signal({ kind: 'idle' }).asReadonly(),
+            goal: goalSignal.asReadonly(),
+            goalCategories: categoriesSignal.asReadonly(),
+            viewState: viewStateSignal.asReadonly(),
+            progressOverlayState: progressOverlaySignal.asReadonly(),
+            successMessage: successMessageSignal.asReadonly(),
             loadGoal,
             loadGoalCategories,
-            archiveGoal: vi.fn(),
+            archiveGoal,
+            recordProgress,
+            openProgressOverlay,
+            closeProgressOverlay,
           },
         },
         {
           provide: Router,
           useValue: {
-            navigate,
+            navigate: vi.fn(),
           },
         },
         {
@@ -54,35 +65,124 @@ describe('GoalDetailPage', () => {
 
     fixture = TestBed.createComponent(GoalDetailPage);
     fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
+  beforeEach(async () => {
+    goalSignal = signal(createGoal());
+    categoriesSignal = signal(createCategories());
+    viewStateSignal = signal({ kind: 'idle' });
+    progressOverlaySignal = signal<ProgressOverlayState>({ kind: 'closed' });
+    successMessageSignal = signal<string | null>(null);
+    loadGoal = vi.fn();
+    loadGoalCategories = vi.fn();
+    archiveGoal = vi.fn(() => of({ archivedAt: '2026-04-04T10:00:00Z' }));
+    recordProgress = vi.fn(() => of(createProgressEntry()));
+    openProgressOverlay = vi.fn(() => progressOverlaySignal.set({ kind: 'open' }));
+    closeProgressOverlay = vi.fn(() => progressOverlaySignal.set({ kind: 'closed' }));
+
+    await createComponent();
   });
 
-  it('renders the planned path summary and checkpoint plan', () => {
-    expect(textContent()).toContain('Read 24 books');
-    expect(textContent()).toContain('Planned path');
-    expect(textContent()).toContain('Monthly milestones carry the target across the year.');
-    expect(textContent()).toContain('Customized from suggestion');
-    expect(textContent()).toContain('Category-based plan');
-    expect(textContent()).not.toContain('CATEGORY_AWARE');
-    expect(fixture.nativeElement.querySelectorAll('.checkpoint-card').length).toBe(2);
+  it('renders the sections in status, comparison, history, checkpoint order', () => {
+    const hero = fixture.nativeElement.querySelector('.goal-status-hero');
+    const comparison = fixture.nativeElement.querySelector('.goal-comparison-strip');
+    const history = fixture.nativeElement.querySelector('.goal-progress-history');
+    const checkpoints = fixture.nativeElement.querySelector('.goal-checkpoint-section');
+
+    expect(hero).not.toBeNull();
+    expect(comparison).not.toBeNull();
+    expect(history).not.toBeNull();
+    expect(checkpoints).not.toBeNull();
+    expect(hero.compareDocumentPosition(comparison)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(comparison.compareDocumentPosition(history)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(history.compareDocumentPosition(checkpoints)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
-  it('shows archive and edit actions for an active goal', () => {
-    expect(textContent()).toContain('Archive goal');
-    expect(textContent()).toContain('Edit plan');
+  it('shows the active-goal CTA and comparison copy', () => {
+    expect(textContent()).toContain('Add progress update');
+    expect(textContent()).toContain('Actual so far');
+    expect(textContent()).toContain('Expected by today');
   });
 
-  it('centers archived action pills like buttons', () => {
-    const styles = ((GoalDetailPage as unknown as { ɵcmp: { styles: string[] } }).ɵcmp.styles).join('\n');
+  it('hides the add-progress CTA for archived goals and shows the read-only note', async () => {
+    goalSignal.set(createGoal({ status: 'ARCHIVED' }));
+    fixture.detectChanges();
+    await fixture.whenStable();
 
-    expect(styles).toMatch(/display:\s*inline-flex/);
-    expect(styles).toMatch(/align-items:\s*center/);
-    expect(styles).toMatch(/justify-content:\s*center/);
+    expect(textContent()).not.toContain('Add progress update');
+    expect(textContent()).toContain('This goal is archived. Its plan and progress history stay visible, but new updates are disabled.');
   });
 
-  it('adds breathing room above the action row', () => {
-    const styles = ((GoalDetailPage as unknown as { ɵcmp: { styles: string[] } }).ɵcmp.styles).join('\n');
+  it('renders loading skeletons for the hero and comparison strip', async () => {
+    goalSignal.set(null);
+    viewStateSignal.set({ kind: 'loading' });
+    fixture.detectChanges();
+    await fixture.whenStable();
 
-    expect(styles).toMatch(/margin-top:\s*var\(--space-lg\)/);
+    expect(fixture.nativeElement.querySelector('.goal-status-hero__skeleton-label')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.goal-status-hero__skeleton-headline')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.goal-status-hero__skeleton-summary')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.goal-comparison-strip__skeleton')).not.toBeNull();
+  });
+
+  it('renders the exact retry copy in the error state', async () => {
+    goalSignal.set(null);
+    viewStateSignal.set({
+      kind: 'error',
+      message:
+        'Milestory could not load the current progress status for this goal. Retry the page, and if the issue persists confirm the backend is running and the goal still exists.',
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(textContent()).toContain(
+      'Milestory could not load the current progress status for this goal. Retry the page, and if the issue persists confirm the backend is running and the goal still exists.',
+    );
+    expect(textContent()).toContain('Retry page');
+  });
+
+  it('renders the exact empty-state heading and helper body', async () => {
+    goalSignal.set(createGoal({ progressEntries: [] }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(textContent()).toContain('No progress logged yet');
+    expect(textContent()).toContain(
+      'Add your first update to see how this goal is tracking against the plan for today.',
+    );
+  });
+
+  it('opens the overlay, traps focus, closes on escape, and returns focus to the trigger', async () => {
+    const trigger = fixture.nativeElement.querySelector('.goal-status-hero__cta');
+
+    trigger.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const dialog = fixture.nativeElement.querySelector('[role="dialog"]') as HTMLElement;
+    const dateInput = fixture.nativeElement.querySelector('#progress-entry-date') as HTMLInputElement;
+    const actionButtons = fixture.nativeElement.querySelectorAll(
+      '.goal-progress-overlay__actions .goal-button',
+    ) as NodeListOf<HTMLButtonElement>;
+    const lastFocusableButton = actionButtons[actionButtons.length - 1];
+
+    expect(dialog).not.toBeNull();
+    expect(document.activeElement).toBe(dateInput);
+
+    lastFocusableButton.focus();
+    dialog.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }));
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(dateInput);
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
+    expect(document.activeElement).toBe(trigger);
   });
 });
 
@@ -97,7 +197,9 @@ function createCategories(): ListGoalCategories200ResponseInner[] {
   ];
 }
 
-function createGoal(): ListGoals200ResponseInner {
+function createGoal(
+  overrides: Partial<ListGoals200ResponseInner> = {},
+): ListGoals200ResponseInner {
   return {
     goalId: 'goal-id',
     planningYear: 2026,
@@ -117,7 +219,21 @@ function createGoal(): ListGoals200ResponseInner {
     paceStatus: 'ON_PACE',
     paceSummary: "You're right where this goal expected you to be today.",
     paceDetail: 'You are matching the planned pace for today.',
-    progressEntries: [],
+    progressEntries: [
+      createProgressEntry({
+        progressEntryId: 'progress-entry-2',
+        entryDate: '2026-04-04',
+        progressValue: 6,
+        note: 'Finished another book.',
+      }),
+      createProgressEntry({
+        progressEntryId: 'progress-entry-1',
+        entryDate: '2026-03-29',
+        progressValue: 5,
+        note: 'Correction after removing a duplicate.',
+        entryType: 'CORRECTION',
+      }),
+    ],
     checkpoints: [
       {
         checkpointId: 'checkpoint-1',
@@ -126,20 +242,35 @@ function createGoal(): ListGoals200ResponseInner {
         targetValue: 2,
         note: 'Start with a manageable pace.',
         origin: 'SUGGESTED',
-        progressContextLabel: 'Expected by now',
-        progressContextDetail: 'You planned to reach 2 books by this point.',
+        progressContextLabel: 'Latest checkpoint passed',
+        progressContextDetail: 'You cleared the first checkpoint and are carrying momentum forward.',
       },
       {
         checkpointId: 'checkpoint-2',
         sequenceNumber: 2,
-        checkpointDate: '2026-02-28',
-        targetValue: 4,
-        note: 'Hold steady through February.',
+        checkpointDate: '2026-06-30',
+        targetValue: 12,
+        note: 'Hold steady through midyear.',
         origin: 'SUGGESTED',
         progressContextLabel: 'Upcoming checkpoint',
-        progressContextDetail: 'The next target is 4 books by February 28.',
+        progressContextDetail: 'The next target is 12 books by June 30.',
       },
     ],
+    ...overrides,
+  };
+}
+
+function createProgressEntry(
+  overrides: Partial<ListGoals200ResponseInnerProgressEntriesInner> = {},
+): ListGoals200ResponseInnerProgressEntriesInner {
+  return {
+    progressEntryId: 'progress-entry-id',
+    entryDate: '2026-04-04',
+    progressValue: 6,
+    note: 'Finished another book.',
+    entryType: 'NORMAL',
+    recordedAt: '2026-04-04T10:00:00Z',
+    ...overrides,
   };
 }
 
