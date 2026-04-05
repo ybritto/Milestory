@@ -33,10 +33,10 @@
 
 ### Dashboard
 
-- [ ] **DASH-01**: User lands on a dashboard that summarizes current goal health
-- [ ] **DASH-02**: User can identify which goals need attention first from the dashboard
-- [ ] **DASH-03**: User can see accomplishment levels such as 80%, 100%, and 120% for relevant goals
-- [ ] **DASH-04**: User can drill from the dashboard into goal-level progress detail
+- [x] **DASH-01**: User lands on a dashboard that summarizes current goal health
+- [x] **DASH-02**: User can identify which goals need attention first from the dashboard
+- [x] **DASH-03**: User can see accomplishment levels such as 80%, 100%, and 120% for relevant goals
+- [x] **DASH-04**: User can drill from the dashboard into goal-level progress detail
 
 ## v2 Requirements
 
@@ -81,10 +81,10 @@
 | PROG-02 | Phase 3 | Complete |
 | PROG-03 | Phase 3 | Complete |
 | PROG-04 | Phase 3 | Complete |
-| DASH-01 | Phase 4 | Pending |
-| DASH-02 | Phase 4 | Pending |
-| DASH-03 | Phase 4 | Pending |
-| DASH-04 | Phase 4 | Pending |
+| DASH-01 | Phase 4 | Complete |
+| DASH-02 | Phase 4 | Complete |
+| DASH-03 | Phase 4 | Complete |
+| DASH-04 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 18 total
@@ -93,4 +93,4 @@
 
 ---
 *Requirements defined: 2026-04-03*
-*Last updated: 2026-04-04 after completing Phase 03 Plan 02*
+*Last updated: 2026-04-05 after completing Phase 04 Plan 01*

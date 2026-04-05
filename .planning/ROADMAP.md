@@ -83,7 +83,7 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Build the dashboard presenter, accomplishment-band system, and dashboard page
+- [x] 04-01-PLAN.md — Build the dashboard presenter, accomplishment-band system, and dashboard page
 - [ ] 04-02-PLAN.md — Replace the placeholder root with the app shell and dashboard-first route tree
 - [ ] 04-03-PLAN.md — Add the active-goals route and align detail screens with shared accomplishment bands
 
@@ -102,4 +102,4 @@ Phase 1 addresses current scaffold risks before feature growth. Phase 2 defines 
 All v1 requirements map to exactly one phase.
 
 ---
-*Last updated: 2026-04-04 after completing Phase 03 Plan 03*
+*Last updated: 2026-04-05 after completing Phase 04 Plan 01*
