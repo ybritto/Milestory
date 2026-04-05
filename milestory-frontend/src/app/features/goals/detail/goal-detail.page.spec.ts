@@ -106,6 +106,35 @@ describe('GoalDetailPage', () => {
     expect(textContent()).toContain('Expected by today');
   });
 
+  it('renders the accomplishment band in the status hero once progress reaches the 80 percent threshold', async () => {
+    goalSignal.set(createGoal({ progressPercentOfTarget: 80 }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const band = fixture.nativeElement.querySelector('app-accomplishment-band');
+
+    expect(band).not.toBeNull();
+    expect(band.closest('.goal-status-hero')).not.toBeNull();
+    expect(textContent()).toContain('80% milestone');
+  });
+
+  it('reuses the shared accomplishment-band copy for the 80, 100, and 120 percent thresholds', async () => {
+    goalSignal.set(createGoal({ progressPercentOfTarget: 80 }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(textContent()).toContain('80% milestone');
+
+    goalSignal.set(createGoal({ progressPercentOfTarget: 100 }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(textContent()).toContain('Target reached');
+
+    goalSignal.set(createGoal({ progressPercentOfTarget: 120 }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(textContent()).toContain('120% stretch');
+  });
+
   it('hides the add-progress CTA for archived goals and shows the read-only note', async () => {
     goalSignal.set(createGoal({ status: 'ARCHIVED' }));
     fixture.detectChanges();

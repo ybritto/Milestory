@@ -12,11 +12,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { RecordGoalProgressEntryRequest } from '../../../../api/model/recordGoalProgressEntryRequest';
+import { AccomplishmentBandComponent } from '../../../shared/ui/accomplishment-band/accomplishment-band.component';
 import { GoalPlanningStore } from '../shared/goal-planning.store';
 
 @Component({
   selector: 'app-goal-detail-page',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, AccomplishmentBandComponent],
   templateUrl: './goal-detail.page.html',
   styleUrl: './goal-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

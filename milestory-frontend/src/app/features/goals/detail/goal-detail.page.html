@@ -35,6 +35,8 @@
         <p class="goal-status-hero__summary">{{ goal.paceSummary }}</p>
         <p class="goal-status-hero__detail">{{ goal.paceDetail }}</p>
 
+        <app-accomplishment-band [progressPercent]="goal.progressPercentOfTarget" />
+
         <div class="goal-status-hero__meta">
           <span class="goal-pill">{{ goal.targetValue }} {{ goal.unit }}</span>
           <span class="goal-pill">{{ goal.progressPercentOfTarget }}% of target</span>
