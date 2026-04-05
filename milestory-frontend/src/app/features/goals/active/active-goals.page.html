@@ -1,9 +1,14 @@
 <section class="active-goals-page" aria-labelledby="active-goals-title">
-  <p class="active-goals-page__eyebrow">Focused next surface</p>
+  <p class="active-goals-page__eyebrow">Active goal scan</p>
   <h1 id="active-goals-title">Active goals</h1>
   <p class="active-goals-page__summary">
-    This destination is now reserved inside the Milestory shell so the upcoming active-goals
-    experience can land here without colliding with goal detail routes.
+    A denser scan of your active goals, with the same progress, checkpoint, and accomplishment
+    signals you see on the dashboard.
   </p>
-  <a routerLink="/dashboard" class="active-goals-page__link">Back to dashboard</a>
+
+  <div class="active-goals-page__list">
+    @for (goal of goalCards(); track goal.goalId) {
+      <app-goal-summary-card [goal]="goal" />
+    }
+  </div>
 </section>
