@@ -1,4 +1,4 @@
-package com.ybritto.milestory.goal.out.adapter;
+package com.ybritto.milestory.goal.out.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

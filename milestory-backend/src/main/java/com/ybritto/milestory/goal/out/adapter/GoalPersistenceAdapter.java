@@ -17,6 +17,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.ybritto.milestory.goal.out.entity.GoalCategoryJpaEntity;
+import com.ybritto.milestory.goal.out.entity.GoalCheckpointJpaEntity;
+import com.ybritto.milestory.goal.out.entity.GoalJpaEntity;
+import com.ybritto.milestory.goal.out.entity.GoalProgressEntryJpaEntity;
+import com.ybritto.milestory.goal.out.repository.GoalCategoryJpaRepository;
+import com.ybritto.milestory.goal.out.repository.GoalJpaRepository;
+import com.ybritto.milestory.goal.out.repository.GoalProgressEntryJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
