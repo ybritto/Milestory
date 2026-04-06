@@ -25,8 +25,8 @@
 .app-shell__topbar,
 .app-shell__main,
 .app-shell__drawer {
-  background: rgb(255 255 255 / 0.58);
-  border: 1px solid rgb(255 255 255 / 0.72);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-surface-glass-strong);
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(18px);
 }
@@ -39,9 +39,9 @@
 .app-shell__eyebrow {
   margin: 0 0 var(--space-sm);
   color: var(--color-accent);
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .app-shell__brand h1 {
-  font-size: clamp(2rem, 3vw, 2.9rem);
+  font-size: clamp(1.9rem, 3vw, 2.7rem);
 }
 
 .app-shell__summary {
@@ -123,16 +123,16 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  padding: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
 }
 
 .app-shell__topbar-copy {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .app-shell__topbar-title {
-  font-size: clamp(1.25rem, 2vw, 1.8rem);
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
 }
 
 .app-shell__main {

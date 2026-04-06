@@ -19,11 +19,13 @@ describe('ActiveGoalsPage', () => {
       systemDefined: true,
     },
   ]);
+  const viewState = signal<{ kind: string; message?: string }>({ kind: 'idle' });
   const loadGoals = vi.fn();
   const loadGoalCategories = vi.fn();
 
   beforeEach(() => {
     goals.set([createGoal()]);
+    viewState.set({ kind: 'idle' });
     loadGoals.mockReset();
     loadGoalCategories.mockReset();
   });
@@ -38,6 +40,7 @@ describe('ActiveGoalsPage', () => {
           useValue: {
             goals: goals.asReadonly(),
             goalCategories: categories.asReadonly(),
+            viewState: viewState.asReadonly(),
             loadGoals,
             loadGoalCategories,
           },
@@ -81,6 +84,44 @@ describe('ActiveGoalsPage', () => {
     const link = fixture.nativeElement.querySelector('.goal-summary-card__link') as HTMLAnchorElement | null;
 
     expect(link?.getAttribute('href')).toBe('/goals/goal-1');
+  });
+
+  it('renders a loading state while active goals are being requested', async () => {
+    goals.set([]);
+    viewState.set({ kind: 'loading' });
+
+    const fixture = await createComponent();
+    const text = fixture.nativeElement.textContent ?? '';
+
+    expect(text).toContain('Loading active goals');
+    expect(text).toContain('Milestory is gathering the goals that need today’s attention.');
+  });
+
+  it('renders an empty state when there are no active goals to show', async () => {
+    goals.set([]);
+    viewState.set({ kind: 'idle' });
+
+    const fixture = await createComponent();
+    const text = fixture.nativeElement.textContent ?? '';
+
+    expect(text).toContain('No active goals yet');
+    expect(text).toContain('Start a new goal to turn this route into your denser daily scan.');
+    expect(text).toContain('Create a goal');
+  });
+
+  it('renders an error state with retry copy when active goals fail to load', async () => {
+    goals.set([]);
+    viewState.set({
+      kind: 'error',
+      message: 'Milestory could not load your active goals. Retry the page and confirm the backend is running.',
+    });
+
+    const fixture = await createComponent();
+    const text = fixture.nativeElement.textContent ?? '';
+
+    expect(text).toContain('Active goals unavailable');
+    expect(text).toContain('Milestory could not load your active goals. Retry the page and confirm the backend is running.');
+    expect(text).toContain('Retry active goals');
   });
 });
 

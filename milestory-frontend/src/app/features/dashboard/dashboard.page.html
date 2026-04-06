@@ -1,53 +1,90 @@
 <main class="dashboard-page">
   <section class="dashboard-page__shell">
-    <section class="dashboard-command-center">
-      <article class="dashboard-command-center__stat">
-        <p class="dashboard-command-center__eyebrow">Active goals</p>
-        <p class="dashboard-command-center__count">{{ viewModel().activeGoalCount }}</p>
-        <p class="dashboard-command-center__helper">A practical scan of what needs attention and what is carrying momentum.</p>
-      </article>
+    @if (isLoading()) {
+      <section class="dashboard-state dashboard-state--loading" aria-live="polite">
+        <p class="dashboard-state__eyebrow">Dashboard</p>
+        <h1>Loading your dashboard</h1>
+        <p class="dashboard-state__copy">
+          Milestory is pulling the latest goal momentum and checkpoint signals.
+        </p>
+        <div class="dashboard-state__skeletons" aria-hidden="true">
+          <div class="dashboard-state__skeleton-card"></div>
+          <div class="dashboard-state__skeleton-card"></div>
+          <div class="dashboard-state__skeleton-card"></div>
+        </div>
+      </section>
+    } @else if (isError()) {
+      <section class="dashboard-state dashboard-state--error" aria-live="assertive">
+        <p class="dashboard-state__eyebrow">Dashboard</p>
+        <h1>Dashboard unavailable</h1>
+        <p class="dashboard-state__copy">{{ errorMessage() }}</p>
+        <button type="button" class="dashboard-state__button" (click)="retryDashboard()">
+          Retry dashboard
+        </button>
+      </section>
+    } @else if (isEmpty()) {
+      <section class="dashboard-state dashboard-state--empty">
+        <p class="dashboard-state__eyebrow">Dashboard</p>
+        <h1>No active goals yet</h1>
+        <p class="dashboard-state__copy">
+          Create your first goal to turn the dashboard into a live momentum board.
+        </p>
+        <a class="dashboard-state__button" routerLink="/goals/new">Create a goal</a>
+      </section>
+    } @else {
+      <section class="dashboard-command-center">
+        <article class="dashboard-command-center__stat">
+          <p class="dashboard-command-center__eyebrow">Active goals</p>
+          <p class="dashboard-command-center__count">{{ viewModel().activeGoalCount }}</p>
+          <p class="dashboard-command-center__helper">
+            A practical scan of what needs attention and what is carrying momentum.
+          </p>
+        </article>
 
-      @if (strongestRisk(); as strongestRisk) {
-        <a class="dashboard-callout dashboard-callout--risk" [routerLink]="['/goals', strongestRisk.goalId]">
-          <p class="dashboard-callout__label">Strongest risk</p>
-          <h2>{{ strongestRisk.title }}</h2>
-          <p>{{ strongestRisk.detail }}</p>
-        </a>
-      }
+        @if (strongestRisk(); as strongestRisk) {
+          <a class="dashboard-callout dashboard-callout--risk" [routerLink]="['/goals', strongestRisk.goalId]">
+            <p class="dashboard-callout__label">Strongest risk</p>
+            <h2>{{ strongestRisk.title }}</h2>
+            <p>{{ strongestRisk.detail }}</p>
+          </a>
+        }
 
-      @if (strongestWin(); as strongestWin) {
-        <a class="dashboard-callout dashboard-callout--win" [routerLink]="['/goals', strongestWin.goalId]">
-          <p class="dashboard-callout__label">Strongest win</p>
-          <h2>{{ strongestWin.title }}</h2>
-          <p>{{ strongestWin.detail }}</p>
-        </a>
-      }
+        @if (strongestWin(); as strongestWin) {
+          <a class="dashboard-callout dashboard-callout--win" [routerLink]="['/goals', strongestWin.goalId]">
+            <p class="dashboard-callout__label">Strongest win</p>
+            <h2>{{ strongestWin.title }}</h2>
+            <p>{{ strongestWin.detail }}</p>
+          </a>
+        }
 
-      @if (suggestedNext(); as suggestedNext) {
-        <section class="dashboard-command-center__next">
-          <p class="dashboard-command-center__eyebrow">Suggested next goal</p>
-          <h2>{{ suggestedNext.title }}</h2>
-          <p>{{ suggestedNext.detail }}</p>
-          <a class="dashboard-command-center__cta" [routerLink]="['/goals', suggestedNext.goalId]">Open next</a>
-        </section>
-      }
-    </section>
+        @if (suggestedNext(); as suggestedNext) {
+          <section class="dashboard-command-center__next">
+            <p class="dashboard-command-center__eyebrow">Suggested next goal</p>
+            <h2>{{ suggestedNext.title }}</h2>
+            <p>{{ suggestedNext.detail }}</p>
+            <a class="dashboard-command-center__cta" [routerLink]="['/goals', suggestedNext.goalId]">
+              Open next
+            </a>
+          </section>
+        }
+      </section>
 
-    <section class="dashboard-groups">
-      @for (group of groups(); track group.key) {
-        <section class="dashboard-group">
-          <div class="dashboard-group__header">
-            <h2>{{ group.heading }}</h2>
-            <p>{{ group.goals.length }} active goal{{ group.goals.length === 1 ? '' : 's' }}</p>
-          </div>
+      <section class="dashboard-groups">
+        @for (group of groups(); track group.key) {
+          <section class="dashboard-group">
+            <div class="dashboard-group__header">
+              <h2>{{ group.heading }}</h2>
+              <p>{{ group.goals.length }} active goal{{ group.goals.length === 1 ? '' : 's' }}</p>
+            </div>
 
-          <div class="dashboard-group__grid">
-            @for (goal of group.goals; track goal.goalId) {
-              <app-goal-summary-card [goal]="goal" />
-            }
-          </div>
-        </section>
-      }
-    </section>
+            <div class="dashboard-group__grid">
+              @for (goal of group.goals; track goal.goalId) {
+                <app-goal-summary-card [goal]="goal" />
+              }
+            </div>
+          </section>
+        }
+      </section>
+    }
   </section>
 </main>

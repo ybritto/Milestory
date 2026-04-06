@@ -16,13 +16,31 @@ import { DashboardCallout } from './shared/dashboard-view.models';
 export class DashboardPage {
   private readonly goalPlanningStore = inject(GoalPlanningStore);
 
+  protected readonly viewState = this.goalPlanningStore.viewState;
   protected readonly viewModel = computed(() => buildDashboardViewModel(this.goalPlanningStore.goals()));
   protected readonly groups = computed(() => this.viewModel().groups.filter((group) => group.goals.length > 0));
   protected readonly strongestRisk = computed(() => this.findCallout('risk'));
   protected readonly strongestWin = computed(() => this.findCallout('win'));
   protected readonly suggestedNext = computed(() => this.findCallout('next'));
+  protected readonly isLoading = computed(
+    () => this.viewState().kind === 'loading' && this.goalPlanningStore.goals().length === 0,
+  );
+  protected readonly isError = computed(
+    () => this.viewState().kind === 'error' && this.goalPlanningStore.goals().length === 0,
+  );
+  protected readonly isEmpty = computed(
+    () => this.viewState().kind !== 'loading' && this.goalPlanningStore.goals().length === 0 && !this.isError(),
+  );
+  protected readonly errorMessage = computed(() => {
+    const state = this.viewState();
+    return state.kind === 'error' ? state.message : '';
+  });
 
   constructor() {
+    this.goalPlanningStore.loadGoals('ACTIVE');
+  }
+
+  protected retryDashboard(): void {
     this.goalPlanningStore.loadGoals('ACTIVE');
   }
 

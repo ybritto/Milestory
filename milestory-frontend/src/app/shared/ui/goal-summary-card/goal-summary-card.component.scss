@@ -1,7 +1,7 @@
 .goal-summary-card {
   border-radius: var(--radius-card);
   border: 1px solid rgb(31 26 23 / 0.08);
-  background: rgb(255 255 255 / 0.6);
+  background: var(--color-surface-elevated);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
 }
@@ -24,6 +24,9 @@
   padding: 1.4rem;
   color: inherit;
   text-decoration: none;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .goal-summary-card__header {
@@ -35,7 +38,7 @@
 
 .goal-summary-card__eyebrow {
   margin: 0 0 0.3rem;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -49,7 +52,7 @@
 
 .goal-summary-card h3 {
   font-family: 'Fraunces', serif;
-  font-size: 1.35rem;
+  font-size: 1.25rem;
 }
 
 .goal-summary-card__summary,
@@ -71,18 +74,23 @@
 .goal-summary-card__metric {
   padding: 0.95rem;
   border-radius: 20px;
-  background: rgb(255 255 255 / 0.55);
+  background: var(--color-surface-soft);
   border: 1px solid rgb(31 26 23 / 0.08);
 }
 
 .goal-summary-card__label {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--color-muted);
 }
 
 .goal-summary-card__value {
   margin-top: 0.25rem;
   font-weight: 700;
+}
+
+.goal-summary-card__link:hover,
+.goal-summary-card__link:focus-visible {
+  transform: translateY(-2px);
 }
 
 @media (max-width: 720px) {

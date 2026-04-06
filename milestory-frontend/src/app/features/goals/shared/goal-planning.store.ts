@@ -201,13 +201,20 @@ export class GoalPlanningStore {
   }
 
   loadGoals(status?: 'ACTIVE' | 'ARCHIVED'): void {
+    this.viewStateState.set({ kind: 'loading' });
+
     this.goalsService.listGoals(status).subscribe({
-      next: (goals) => this.goalsState.set(goals),
+      next: (goals) => {
+        this.goalsState.set(goals);
+        this.viewStateState.set({ kind: 'idle' });
+      },
       error: () =>
         this.viewStateState.set({
           kind: 'error',
           message:
-            'Milestory could not load the goal archive. Confirm the backend goal API is available, then try again.',
+            status === 'ARCHIVED'
+              ? 'Milestory could not load the goal archive. Confirm the backend goal API is available, then try again.'
+              : 'Milestory could not load your active goals. Retry the page and confirm the backend is running.',
         }),
     });
   }

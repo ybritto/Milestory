@@ -11,6 +11,7 @@ import { DashboardPage } from './dashboard.page';
 describe('DashboardPage', () => {
   let fixture: ComponentFixture<DashboardPage>;
   let goalsSignal: WritableSignal<ListGoals200ResponseInner[]>;
+  let viewStateSignal: WritableSignal<{ kind: string; message?: string }>;
   let loadGoals: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
@@ -41,6 +42,7 @@ describe('DashboardPage', () => {
         progressPercentOfTarget: 125,
       }),
     ]);
+    viewStateSignal = signal({ kind: 'idle' });
     loadGoals = vi.fn();
 
     await TestBed.configureTestingModule({
@@ -51,6 +53,7 @@ describe('DashboardPage', () => {
           provide: GoalPlanningStore,
           useValue: {
             goals: goalsSignal.asReadonly(),
+            viewState: viewStateSignal.asReadonly(),
             loadGoals,
           },
         },
@@ -111,6 +114,54 @@ describe('DashboardPage', () => {
     expect(links).toContain('/goals/ahead-goal');
     expect(links).not.toContain('/goals/archive');
     expect(fixture.nativeElement.textContent ?? '').not.toContain('Add progress update');
+  });
+
+  it('renders a deliberate loading state while active goals are loading', async () => {
+    goalsSignal.set([]);
+    viewStateSignal.set({ kind: 'loading' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent ?? '';
+
+    expect(text).toContain('Loading your dashboard');
+    expect(text).toContain('Milestory is pulling the latest goal momentum and checkpoint signals.');
+    expect(fixture.nativeElement.querySelectorAll('.dashboard-state__skeleton-card')).toHaveLength(3);
+  });
+
+  it('renders an empty state when there are no active goals', async () => {
+    goalsSignal.set([]);
+    viewStateSignal.set({ kind: 'idle' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent ?? '';
+
+    expect(text).toContain('No active goals yet');
+    expect(text).toContain('Create your first goal to turn the dashboard into a live momentum board.');
+    expect(text).toContain('Create a goal');
+  });
+
+  it('renders a retryable error state when active goals fail to load', async () => {
+    goalsSignal.set([]);
+    viewStateSignal.set({
+      kind: 'error',
+      message: 'Milestory could not load the dashboard right now. Retry the page and confirm the backend is running.',
+    });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent ?? '';
+
+    expect(text).toContain('Dashboard unavailable');
+    expect(text).toContain('Milestory could not load the dashboard right now. Retry the page and confirm the backend is running.');
+    expect(text).toContain('Retry dashboard');
   });
 });
 

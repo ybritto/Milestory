@@ -1,14 +1,46 @@
 <section class="active-goals-page" aria-labelledby="active-goals-title">
-  <p class="active-goals-page__eyebrow">Active goal scan</p>
-  <h1 id="active-goals-title">Active goals</h1>
-  <p class="active-goals-page__summary">
-    A denser scan of your active goals, with the same progress, checkpoint, and accomplishment
-    signals you see on the dashboard.
-  </p>
+  @if (isLoading()) {
+    <section class="active-goals-state active-goals-state--loading" aria-live="polite">
+      <p class="active-goals-page__eyebrow">Active goal scan</p>
+      <h1 id="active-goals-title">Loading active goals</h1>
+      <p class="active-goals-page__summary">
+        Milestory is gathering the goals that need today’s attention.
+      </p>
+      <div class="active-goals-state__skeletons" aria-hidden="true">
+        <div class="active-goals-state__skeleton-card"></div>
+        <div class="active-goals-state__skeleton-card"></div>
+      </div>
+    </section>
+  } @else if (isError()) {
+    <section class="active-goals-state active-goals-state--error" aria-live="assertive">
+      <p class="active-goals-page__eyebrow">Active goal scan</p>
+      <h1 id="active-goals-title">Active goals unavailable</h1>
+      <p class="active-goals-page__summary">{{ errorMessage() }}</p>
+      <button type="button" class="active-goals-state__button" (click)="retryActiveGoals()">
+        Retry active goals
+      </button>
+    </section>
+  } @else if (isEmpty()) {
+    <section class="active-goals-state active-goals-state--empty">
+      <p class="active-goals-page__eyebrow">Active goal scan</p>
+      <h1 id="active-goals-title">No active goals yet</h1>
+      <p class="active-goals-page__summary">
+        Start a new goal to turn this route into your denser daily scan.
+      </p>
+      <a class="active-goals-state__button" routerLink="/goals/new">Create a goal</a>
+    </section>
+  } @else {
+    <p class="active-goals-page__eyebrow">Active goal scan</p>
+    <h1 id="active-goals-title">Active goals</h1>
+    <p class="active-goals-page__summary">
+      A denser scan of your active goals, with the same progress, checkpoint, and accomplishment
+      signals you see on the dashboard.
+    </p>
 
-  <div class="active-goals-page__list">
-    @for (goal of goalCards(); track goal.goalId) {
-      <app-goal-summary-card [goal]="goal" />
-    }
-  </div>
+    <div class="active-goals-page__list">
+      @for (goal of goalCards(); track goal.goalId) {
+        <app-goal-summary-card [goal]="goal" />
+      }
+    </div>
+  }
 </section>
